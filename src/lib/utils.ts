@@ -44,7 +44,7 @@ export const handleError = async (
 export const isSlug = (str: string): boolean => {
   const slugRegex = /^[a-z0-9]+(-[a-z0-9]+)*$/;
   return slugRegex.test(str);
-}
+};
 
 export const serializeToSlug = (str: string): string => {
   if (isSlug(str)) {
@@ -56,4 +56,4 @@ export const serializeToSlug = (str: string): string => {
     .trim()
     .replace(/[\s\W-]+/g, '-')
     .replace(/^-+|-+$/g, '');
-}
+};

@@ -1,22 +1,19 @@
-// Path: src/commands/Listen.ts
+// Path: src/commands/Destroy.ts
 import {
   Client,
   ChatInputCommandInteraction,
   SlashCommandBuilder,
   PermissionsBitField,
   TextChannel,
-  InteractionResponse
+  InteractionResponse,
 } from 'discord.js';
 
-import {
-  initDiscordMessage,
-  handleError,
-} from '../lib/utils.js';
+import { initDiscordMessage, handleError } from '../lib/utils.js';
 
 import {
   checkIfChannelListening,
   removeDealChannel,
-  getDealChannel
+  getDealChannel,
 } from '../config/database.js';
 
 import { logMessage } from '../lib/logger.js';
@@ -31,11 +28,15 @@ class Destroy {
   }
 
   public async start() {
-    const InitialMessage: InteractionResponse = await initDiscordMessage(this.interaction);
+    const InitialMessage: InteractionResponse = await initDiscordMessage(
+      this.interaction
+    );
 
     try {
-      
-      let channel: TextChannel | null = this.interaction.options.getChannel('channel', false);
+      let channel: TextChannel | null = this.interaction.options.getChannel(
+        'channel',
+        false
+      );
 
       if (channel !== null && !(channel instanceof TextChannel)) {
         throw new Error('The channel is not valid.');
@@ -43,7 +44,9 @@ class Destroy {
         channel = this.interaction.channel as TextChannel;
       }
 
-      const isChannelListening = await checkIfChannelListening(this.interaction.channelId);
+      const isChannelListening = await checkIfChannelListening(
+        this.interaction.channelId
+      );
 
       if (isChannelListening) {
         throw new Error('The channel is not listening for deals.');
@@ -62,16 +65,18 @@ class Destroy {
       await removeDealChannel(this.interaction.channelId);
 
       await this.interaction.webhook.editMessage(InitialMessage.id, {
-        content: `> ❌  No longer listening for deals in the ${"`" + deal.slug + "`"} category.`,
+        content: `> ❌  No longer listening for deals in the ${'`' + deal.slug + '`'} category.`,
       });
 
-      const confirmationMessage = `> 📣 **${channel}** is no longer listening for deals in the ${"`" + deal.slug + "`"} category!`;
+      const confirmationMessage = `> 📣 **${channel}** is no longer listening for deals in the ${'`' + deal.slug + '`'} category!`;
 
       await channel.send({
         content: confirmationMessage,
       });
 
-      logMessage(`Channel ${channel.name} (${channel.id}) is is no longer listening for deals in the ${deal.slug} category and has been removed by ${this.interaction.user.username} (${this.interaction.user.id}) from the guild ${this.interaction.guild.name} (${this.interaction.guild.id}`);
+      logMessage(
+        `Channel ${channel.name} (${channel.id}) is is no longer listening for deals in the ${deal.slug} category and has been removed by ${this.interaction.user.username} (${this.interaction.user.id}) from the guild ${this.interaction.guild.name} (${this.interaction.guild.id}`
+      );
     } catch (error) {
       await handleError(error as Error, this.interaction);
     }
@@ -84,7 +89,8 @@ export default {
     .setName('destroy')
     .setDescription('Stops listening for deals.')
     .addChannelOption((option) =>
-      option.setName('channel')
+      option
+        .setName('channel')
         .setDescription('The channel to stop listening for deals.')
         .setRequired(false)
     )
