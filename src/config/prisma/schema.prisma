@@ -7,8 +7,12 @@ datasource db {
   url      = "mysql://root:123456789@localhost:3306/dealabs"
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+model Deals {
+  id              Int          @id @default(autoincrement())
+  channel_id      String       @db.VarChar(255)
+  guild_id        String       @db.VarChar(255)
+  author_id       String       @db.VarChar(255)
+  deals_recorded  Int          @default(0)
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @default(now())
 }
