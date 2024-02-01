@@ -41,3 +41,19 @@ export const handleError = async (
   }
 };
 
+export const isSlug = (str: string): boolean => {
+  const slugRegex = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+  return slugRegex.test(str);
+}
+
+export const serializeToSlug = (str: string): string => {
+  if (isSlug(str)) {
+    return str;
+  }
+
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[\s\W-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
