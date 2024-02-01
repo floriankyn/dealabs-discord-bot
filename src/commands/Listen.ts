@@ -21,6 +21,8 @@ import {
 
 import axios, { AxiosError } from "axios"
 
+import { logMessage } from '../lib/logger.js';
+
 class Ping {
   client: Client;
   interaction: ChatInputCommandInteraction;
@@ -61,11 +63,11 @@ class Ping {
         throw new Error('The channel is already listening for deals.');
       }
 
-      if(!this.interaction.guildId) {
+      if (!this.interaction.guild) {
         throw new Error('The guild id is not valid.');
       }
 
-      await saveDealChannel(this.interaction.channelId, this.interaction.guildId, this.interaction.user.id);
+      await saveDealChannel(this.interaction.channelId, this.interaction.guild.id, this.interaction.user.id);
 
       await this.interaction.webhook.editMessage(InitialMessage.id, {
         content: `> ✅ Listening for deals in the ${category} category!`,
@@ -77,12 +79,13 @@ class Ping {
         content: confirmationMessage,
       });
 
+      logMessage(`Channel ${channel.name} (${channel.id}) is now listening for deals in the ${category} category and has been set by ${this.interaction.user.username} (${this.interaction.user.id}) on the guild ${this.interaction.guild.name} (${this.interaction.guild.id}`);
     } catch (error) {
       await handleError(error as Error, this.interaction);
     }
   }
 
-  private async checkCategoryExists(slug: string): Promise<{exists: boolean, code: number}> {
+  private async checkCategoryExists(slug: string): Promise<{ exists: boolean, code: number }> {
     const url = `https://www.dealabs.com/rss/groupe/${slug}`;
 
     try {
@@ -114,13 +117,13 @@ export default {
     .setDescription('Starts listening for deals!')
     .addStringOption((option) =>
       option.setName('category')
-      .setDescription('The slug category to listen for.')
-      .setRequired(true)
+        .setDescription('The slug category to listen for.')
+        .setRequired(true)
     )
     .addChannelOption((option) =>
       option.setName('channel')
-      .setDescription('The channel to post the deals in.')
-      .setRequired(false)
+        .setDescription('The channel to post the deals in.')
+        .setRequired(false)
     )
     .setDefaultMemberPermissions(
       new PermissionsBitField(PermissionsBitField.Flags.Administrator).bitfield
