@@ -17,3 +17,15 @@ model Deals {
   created_at      DateTime     @default(now())
   updated_at      DateTime     @default(now())
 }
+
+model Deals_recorded {
+  id              Int          @id @default(autoincrement())
+  title           String      @db.VarChar(255)
+  link            String       @db.Text
+  pubDate         String      @db.VarChar(255)
+  content         String      @db.Text
+  contentSnippet  String      @db.Text
+  guid            String      @db.VarChar(255)
+  categories      String      @db.Text
+  isoDate         String      @db.VarChar(255)
+}
