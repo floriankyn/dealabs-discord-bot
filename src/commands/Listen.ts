@@ -23,7 +23,7 @@ import axios, { AxiosError } from "axios"
 
 import { logMessage } from '../lib/logger.js';
 
-class Ping {
+class Listen {
   client: Client;
   interaction: ChatInputCommandInteraction;
 
@@ -38,6 +38,12 @@ class Ping {
     try {
       const category = this.interaction.options.getString('category', true);
       const slug = serializeToSlug(category);
+
+      const isChannelListening = await checkIfChannelListening(this.interaction.channelId);
+
+      if (!isChannelListening) {
+        throw new Error('The channel is already listening for deals.');
+      }
 
       const categoryExists = await this.checkCategoryExists(slug);
 
@@ -57,23 +63,17 @@ class Ping {
         channel = this.interaction.channel as TextChannel;
       }
 
-      const isChannelListening = await checkIfChannelListening(this.interaction.channelId);
-
-      if (!isChannelListening) {
-        throw new Error('The channel is already listening for deals.');
-      }
-
       if (!this.interaction.guild) {
         throw new Error('The guild id is not valid.');
       }
 
-      await saveDealChannel(this.interaction.channelId, this.interaction.guild.id, this.interaction.user.id);
+      await saveDealChannel(this.interaction.channelId, this.interaction.guild.id, this.interaction.user.id, slug);
 
       await this.interaction.webhook.editMessage(InitialMessage.id, {
         content: `> ✅ Listening for deals in the ${category} category!`,
       });
 
-      const confirmationMessage = `> 📣 **${this.interaction.user.username}** is now listening for deals in the ${"`" + category + "`"} category!`;
+      const confirmationMessage = `> 📣 **${channel}** is now listening for deals in the ${"`" + category + "`"} category!`;
 
       await channel.send({
         content: confirmationMessage,
@@ -129,6 +129,6 @@ export default {
       new PermissionsBitField(PermissionsBitField.Flags.Administrator).bitfield
     ),
   run: async (client: Client, interaction: ChatInputCommandInteraction) => {
-    await new Ping(client, interaction).start();
+    await new Listen(client, interaction).start();
   },
 };
