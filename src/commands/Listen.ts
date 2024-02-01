@@ -12,11 +12,14 @@ import {
   initDiscordMessage,
   handleError,
   serializeToSlug,
-  isSlug
 } from '../lib/utils.js';
 
-import axios, { AxiosError, AxiosResponse } from "axios"
-import { error } from 'winston';
+import {
+  checkIfChannelListening,
+  saveDealChannel
+} from '../config/database.js';
+
+import axios, { AxiosError } from "axios"
 
 class Ping {
   client: Client;
@@ -44,11 +47,25 @@ class Ping {
         }
       }
 
-      const channel: TextChannel | null = this.interaction.options.getChannel('channel', false);
+      let channel: TextChannel | null = this.interaction.options.getChannel('channel', false);
 
       if (channel !== null && !(channel instanceof TextChannel)) {
         throw new Error('The channel is not valid.');
+      } else if (channel === null) {
+        channel = this.interaction.channel as TextChannel;
       }
+
+      const isChannelListening = await checkIfChannelListening(this.interaction.channelId);
+
+      if (!isChannelListening) {
+        throw new Error('The channel is already listening for deals.');
+      }
+
+      if(!this.interaction.guildId) {
+        throw new Error('The guild id is not valid.');
+      }
+
+      await saveDealChannel(this.interaction.channelId, this.interaction.guildId, this.interaction.user.id);
 
       await this.interaction.webhook.editMessage(InitialMessage.id, {
         content: `> ✅ Listening for deals in the ${category} category!`,
@@ -56,18 +73,9 @@ class Ping {
 
       const confirmationMessage = `> 📣 **${this.interaction.user.username}** is now listening for deals in the ${"`" + category + "`"} category!`;
 
-      if(channel !== null) {
-        await channel.send({
-          content: confirmationMessage,
-        });
-      } else {
-        await this.interaction.followUp({
-          content: confirmationMessage,
-          ephemeral: false,
-        });
-      }
-
-      await this.interaction.webhook.deleteMessage(InitialMessage.id);
+      await channel.send({
+        content: confirmationMessage,
+      });
 
     } catch (error) {
       await handleError(error as Error, this.interaction);
