@@ -1,11 +1,18 @@
-// Path: src/commands/Ping.ts
+// Path: src/commands/Stats.ts
 import {
   Client,
   ChatInputCommandInteraction,
   SlashCommandBuilder,
+  InteractionResponse,
 } from 'discord.js';
 
-class Ping {
+import { initDiscordMessage, handleError } from '../lib/utils.js';
+
+import {
+  getDealChannel,
+} from '../config/database.js';
+
+class Stats {
   client: Client;
   interaction: ChatInputCommandInteraction;
 
@@ -15,18 +22,33 @@ class Ping {
   }
 
   public async start() {
-    await this.interaction.reply({
-      content: 'Pong!',
-    });
+    const InitialMessage: InteractionResponse = await initDiscordMessage(
+      this.interaction
+    );
+
+    try {
+      const deal = await getDealChannel(this.interaction.channelId);
+
+      if (deal === null) {
+        throw new Error('The channel is not listening for deals.');
+      }
+
+      await this.interaction.webhook.editMessage(InitialMessage.id, {
+        content: `> This channel is listening for deals in the category \`${deal.slug}\` and was created by <@${deal.author_id}>.\n\n > It has received **${deal.deals_recorded}** deals so far`,
+      });
+    } catch (error) {
+      await handleError(error as Error, this.interaction);
+    }
+
   }
 }
 
 export default {
-  name: 'ping',
+  name: 'stats',
   command: new SlashCommandBuilder()
-    .setName('ping')
-    .setDescription('Replies with Pong!'),
+    .setName('stats')
+    .setDescription('Display stats relative to the bot.'),
   run: async (client: Client, interaction: ChatInputCommandInteraction) => {
-    await new Ping(client, interaction).start();
+    await new Stats(client, interaction).start();
   },
 };
