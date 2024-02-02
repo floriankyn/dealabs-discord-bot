@@ -76,18 +76,21 @@ class Listen {
         throw new Error('The guild id is not valid.');
       }
 
+      const keyword = this.interaction.options.getString('keyword', false);
+
       await saveDealChannel(
         this.interaction.channelId,
         this.interaction.guild.id,
         this.interaction.user.id,
-        slug
+        slug,
+        keyword
       );
 
       await this.interaction.webhook.editMessage(InitialMessage.id, {
-        content: `> ✅ Listening for deals in the ${category} category!`,
+        content: `> ✅ Listening for deals in the ${category} category ${keyword ? `with the keyword: \`${keyword}\`` : 'with no keyword'}.`,
       });
 
-      const confirmationMessage = `> 📣 **${channel}** is now listening for deals in the ${'`' + category + '`'} category!`;
+      const confirmationMessage = `> 📣 **${channel}** is now listening for deals in the ${'`' + category + '`'} category  ${keyword ? `with the keyword: \`${keyword}\`` : 'with no keyword'}.`;
 
       await channel.send({
         content: confirmationMessage,
@@ -143,6 +146,12 @@ export default {
       option
         .setName('channel')
         .setDescription('The channel to post the deals in.')
+        .setRequired(false)
+    )
+    .addStringOption((option) =>
+      option
+        .setName('keyword')
+        .setDescription('The keyword to filter the deals with.')
         .setRequired(false)
     )
     .setDefaultMemberPermissions(
