@@ -1,8 +1,11 @@
 import {
   EmbedBuilder,
   ColorResolvable,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   EmbedFooterOptions,
-  AttachmentBuilder
+  AttachmentBuilder,
 } from 'discord.js';
 
 import { MessageModel } from '../types/model';
@@ -11,9 +14,8 @@ export const newDeal = (
   title: string,
   link: string,
   isoDate: string,
-  base64Image: string,
+  base64Image: string
 ): MessageModel => {
-
   const embedColor: ColorResolvable = 'Blue';
 
   const embedFooter: EmbedFooterOptions = {
@@ -32,9 +34,19 @@ export const newDeal = (
     name: 'deal.png',
   });
 
+  const actionRow = new ActionRowBuilder<ButtonBuilder>();
+
+  const applyButton = new ButtonBuilder()
+    .setCustomId(`insight`)
+    .setLabel('Insights')
+    .setStyle(ButtonStyle.Primary)
+    .setEmoji('📝');
+
+  actionRow.addComponents(applyButton);
+
   return {
     embeds: [embed],
-    components: [],
+    components: [actionRow],
     files: [file],
     content: '',
   };
