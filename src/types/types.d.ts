@@ -17,4 +17,4 @@ type dealabsRssFeed = {
   contentSnippet: string;
   guid: string;
   isoDate: string;
-}
+};
