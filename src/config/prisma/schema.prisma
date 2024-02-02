@@ -14,6 +14,7 @@ model Deals {
   author_id       String       @db.VarChar(255)
   slug            String       @db.VarChar(255)
   deals_recorded  Int          @default(0)
+  keyword         String       @db.VarChar(255) @default("")
   created_at      DateTime     @default(now())
   updated_at      DateTime     @default(now())
 }
