@@ -8,9 +8,7 @@ import {
 
 import { initDiscordMessage, handleError } from '../lib/utils.js';
 
-import {
-  getDealChannel,
-} from '../config/database.js';
+import { getDealChannel } from '../config/database.js';
 
 class Stats {
   client: Client;
@@ -39,7 +37,6 @@ class Stats {
     } catch (error) {
       await handleError(error as Error, this.interaction);
     }
-
   }
 }
 
