@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node --env-file ./src/config/env/.env.local ./dist/config/index.js",
+    "start": "node run --env-file ./src/config/env/.env.local ./dist/config/index.js",
     "test": "jest",
     "dev": "tsc && node --env-file ./src/config/env/.env.local ./dist/config/index.js",
     "lint": "eslint . --ext .ts",
