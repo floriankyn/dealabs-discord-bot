@@ -185,8 +185,6 @@ class JobsButtons {
 
     await page.goto(url, { waitUntil: 'networkidle2' });
 
-    await page.screenshot({ path: 'example.png' });
-
     const buttonId =
       'body > div.box--contents > div.popover-portal.vue-portal-target > div > section > div > div > div > div > div > div:nth-child(2) > div.flex.flex--dir-col.flex--fromW3-dir-row.space--t-4 > button.overflow--wrap-on.flex--grow-1.flex--fromW3-grow-0.width--fromW3-ctrl-m.space--mb-3.space--fromW3-mb-0.space--fromW3-mr-2.button.button--shape-circle.button--type-primary.button--mode-brand';
 
