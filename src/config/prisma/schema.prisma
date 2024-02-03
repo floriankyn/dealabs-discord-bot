@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  url      = "mysql://root:123456789@localhost:3306/dealabs"
 }
 
 model Deals {
@@ -29,4 +29,15 @@ model Deals_recorded {
   guid            String      @db.VarChar(255)
   categories      String      @db.Text
   isoDate         String      @db.VarChar(255)
+}
+
+model Proxies {
+  id              Int          @id @default(autoincrement())
+  ip              String       @db.VarChar(255)
+  port            String       @db.VarChar(255)
+  username        String       @db.VarChar(255) @default("")
+  password        String       @db.VarChar(255) @default("")
+  created_by      String       @db.VarChar(255)
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @default(now())
 }
