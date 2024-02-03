@@ -89,27 +89,31 @@ class JobsButtons {
           )
         ) {
           if (!deal.link.includes('discussions')) {
-            logMessage(`New deal found: ${deal.title}`);
-            await saveDeal(
-              deal.title,
-              deal.link,
-              deal.pubDate,
-              category,
-              deal.contentSnippet,
-              deal.guid,
-              deal.isoDate,
-              deal.categories
-            );
+            
+            if(new Date(deal.isoDate).getTime() > new Date().getTime() - 1000 * 60 * 60 * 24 * 1) { // 1 days
 
-            for (const channel of DealsChannels) {
-              if (channel.slug === category) {
-                if (
-                  deal.title
-                    .toLowerCase()
-                    .includes(channel.keyword.toLocaleLowerCase())
-                ) {
-                  await sleep(3000);
-                  await this.sendFeedContent(deal, channel.channel_id);
+              logMessage(`New deal found: ${deal.title}`);
+              await saveDeal(
+                deal.title,
+                deal.link,
+                deal.pubDate,
+                category,
+                deal.contentSnippet,
+                deal.guid,
+                deal.isoDate,
+                deal.categories
+              );
+
+              for (const channel of DealsChannels) {
+                if (channel.slug === category) {
+                  if (
+                    deal.title
+                      .toLowerCase()
+                      .includes(channel.keyword.toLocaleLowerCase())
+                  ) {
+                    await sleep(3000);
+                    await this.sendFeedContent(deal, channel.channel_id);
+                  }
                 }
               }
             }
@@ -152,6 +156,19 @@ class JobsButtons {
     );
   }
 
+  private async getProxy() {
+    return {
+      host: '',
+      port: '',
+      username: '',
+      password: '',
+    }
+  }
+
+  private async useProxy() {
+
+  }
+
   private async getDealImage(url: string) {
     puppeteer.use(stealthPlugin());
 
@@ -161,7 +178,7 @@ class JobsButtons {
         width: 1920,
         height: 1080,
       },
-      executablePath: executablePath(),
+      executablePath: executablePath()
     });
 
     const page = await browser.newPage();
